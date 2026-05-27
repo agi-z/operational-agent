@@ -10,7 +10,7 @@ A single workspace can host **more than one agent**, each with its own identity,
 - A `compliance-agent/` that thinks in risk and precedent.
 - An `ops-agent/` that thinks in process bottlenecks and recurring exceptions.
 
-Different `identity.md` per agent → different professional lens → different extractions from the same raw input. (See the workshop's "intent shapes extraction" idea — Concept 3.)
+Different `identity.md` per agent → different professional lens → different extractions from the same raw input.
 
 The simple alternative: stay single-agent. One brain that does everything is fine for many use cases. Only split into multiple agents when the cognitive load of mixing hats outweighs the cost of maintaining them separately.
 
@@ -65,14 +65,16 @@ Two rejection rules:
 
 After bootstrapping, the new agent is immediately usable: `/agent <name>-agent/`.
 
-## Operations across multiple agents
+## Per-agent operation customization (same pattern, but per agent)
+
+The basic guide covers customizing operations for a single agent (`agent-guide.md` → *Customize how an existing built-in behaves*). The same pattern applies per agent in a multi-agent workspace, with one wrinkle worth noting.
 
 Built-in operations are workspace-shared (`.claude/agent-operations/`), so every agent has the same baseline behaviour. Per-agent operations live in each agent's `<name>-agent/operations/` and apply only to that agent.
 
-Practical implication: if you want `sales-agent` to ingest call transcripts differently from how `compliance-agent` does it, you can't customize the built-in `ingest` for sales only (built-ins are shared). Options:
+Practical implication: if you want `sales-agent` to ingest call transcripts differently from how `compliance-agent` does it, you can't customize the built-in `ingest` for sales only (built-ins are shared workspace-wide, not per-agent). Same two options as the basic guide, scoped per agent:
 
-- **Tune the agent's identity** so its professional lens shapes the built-in op's behaviour. Often enough — `ingest` already reads identity and uses its lens.
-- **Create a per-agent op** with a different name (`/agent sales-agent/ create-op` → `ingest-deep` or similar) that does the customized version. The built-in `ingest` remains available for the standard flow.
+- **Tune the agent's identity.** Each agent's `identity.md` has its own professional lens, so `sales-agent` and `compliance-agent` already get different built-in behaviour without any op customization.
+- **Create a per-agent op.** `/agent sales-agent/ create-op` writes only to `sales-agent/operations/` — `compliance-agent` is unaffected.
 
 ## Multi-agent v1 limitations
 

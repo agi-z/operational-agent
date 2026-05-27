@@ -30,13 +30,17 @@ The agent has a **brain folder** at `agent/` holding what it knows, and a paired
 
 ## First time? Bootstrap the agent
 
-If `agent/` doesn't exist yet, the workspace has no agent. Create one:
+If `agent/` doesn't exist yet, the workspace has no agent. (If you cloned a populated workspace, skip ahead to the workflows.)
 
 ```
 /agent create-agent
 ```
 
-The dispatcher walks you through identity (Quick path: purpose + professional lens + responsibilities; Deep path: full identity + seed entities and references). It then sets up the agent's folder and the paired output folder. All built-in operations are immediately available — nothing to install per agent.
+The dispatcher walks you through identity — Quick path (3 fields: purpose + professional lens + responsibilities) or Deep path (full identity + seed entities and references).
+
+**About "professional lens":** the perspective the agent reasons through. *"Sales / partnership"* and *"compliance officer"* are different lenses — they make the agent emphasize different things in the same raw input. One sentence is enough.
+
+After bootstrap, the agent's folder and paired output folder exist. All built-in operations are immediately available — nothing to install per agent.
 
 ## Common workflows
 
@@ -55,7 +59,13 @@ The agent reads the source, distils it through its professional lens, and writes
 /agent
 ```
 
-Free-form conversation. When the agent produces something save-worthy (a draft, brief, email), it offers to write it to `agent-output/YYMMDD-N-<short-name>/`.
+Free-form conversation. Example asks:
+
+> *"What's open with Acme?"* → agent reads relevant entity logs, summarises.
+>
+> *"Draft a follow-up email to Sarah about the Q3 renewal."* → agent reads the relationship history, drafts the email.
+
+When the agent produces something save-worthy (a draft, brief, email), it offers to write it to `agent-output/YYMMDD-N-<short-name>/` — *YYMMDD* is the date, *N* is a per-day sequence number (1, 2, 3…), and `<short-name>` is a kebab-case summary so you can scan output folders at a glance.
 
 ### Resolve pending items
 
@@ -68,6 +78,13 @@ When you start a converse session, the agent checks `agent/pending/` and offers 
 ```
 
 Walks you through the operation schema. The new op then dispatches via `/agent <op-name>`. (Created ops live in `agent/operations/` — your custom additions to this agent.)
+
+### Customize how an existing built-in behaves
+
+You can't edit a built-in directly (they're shared at the workspace level and managed there). Two ways to customize behaviour for your agent:
+
+- **Tune the agent's identity.** Built-in ops read `agent/identity.md` and let its professional lens shape their behaviour. Often the simplest fix — sharpening the lens changes how `ingest`, `converse`, etc. extract and frame content.
+- **Create a per-agent op with a different name.** `/agent create-op` → e.g., `ingest-deep` that does what you want; built-in `ingest` stays untouched and available for the standard flow.
 
 ## What operations are
 
