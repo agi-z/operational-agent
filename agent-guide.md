@@ -35,7 +35,7 @@ Each agent has its own **brain folder** (e.g., `agent/`, `sales-agent/`) holding
 /agent create-agent
 ```
 
-The dispatcher prompts for a name and walks you through identity (Quick path: purpose + lens + responsibilities; Deep path: full identity + seed entities/references). It then sets up the agent's folder, copies all 10 default operations into it, and creates the paired output folder.
+The dispatcher prompts for a name and walks you through identity (Quick path: purpose + lens + responsibilities; Deep path: full identity + seed entities/references). It then sets up the agent's folder skeleton and the paired output folder. The 10 built-in operations are NOT copied into the new agent — they live once at `.claude/agent-operations/` and are dispatched from there for every agent in the workspace.
 
 ### Bring information into the agent's brain
 
@@ -70,9 +70,14 @@ Walks you through the operation schema. The new op then dispatches via `/agent <
 
 ## What operations are
 
-Operations are how the agent does things. Each operation is a markdown file at `<agent>/operations/<op>.md` carrying its own instructions (purpose, invocation, inputs, references it consults, outputs it writes, steps, grounding-rule handling, logging). Operations are **per-agent** — you can tune `sales-agent`'s `converse` differently from `compliance-agent`'s.
+Operations are how the agent does things. Each operation is a markdown file with its own instructions (purpose, invocation, inputs, references it consults, outputs it writes, steps, grounding-rule handling, logging).
 
-The 10 seeded operations: `converse`, `ingest`, `create-agent`, `manage-agent`, `create-entity`, `manage-entity`, `create-reference`, `manage-reference`, `create-op`, `manage-op`.
+Operations live in two places:
+
+- **Built-in** at `.claude/agent-operations/<op>.md` — the 10 seeded ops (`converse`, `ingest`, `create-agent`, `manage-agent`, `create-entity`, `manage-entity`, `create-reference`, `manage-reference`, `create-op`, `manage-op`). Shared across every agent in this workspace. Not duplicated per agent. **Don't edit by hand** — they're managed at the workspace level (template updates come through `git pull` on the workspace repo).
+- **Per-agent** at `<agent>/operations/<op>.md` — operations you author for a specific agent via `/agent create-op`. Extend the built-in surface for that agent only.
+
+The dispatcher checks built-ins first. If you want to extend an agent's behaviour, `/agent create-op` writes a new per-agent op file under `<agent>/operations/`. To add a brand-new capability across the whole workspace, that's a template-level change (workspace repo, not per-agent).
 
 ## The grounding rule (short version)
 
@@ -83,6 +88,6 @@ Outputs in `<agent>-output/` are exempt — those are generative on purpose; you
 ## v1 limitations to know
 
 - **No cross-agent reference sharing.** Each agent owns its own `<agent>/references/`. If two agents in the same workspace need the same rule set, copy it manually. (v2: workspace-level `shared-references/`.)
-- **No template auto-sync.** Editing `.claude/agent-templates/operations/<op>.md` only affects newly created agents. To update an existing agent's op, run `/agent <agent>/ manage-op <op>` and use the `sync-from-template` action (or paste manually).
+- **Built-in op updates need workspace-repo pull.** Built-ins live at `.claude/agent-operations/` and update through the workspace repo (e.g., `git pull` if the workspace is a submodule). They are not per-agent and do not need syncing — every agent always sees the current built-in.
 - **Operation logs accumulate without rotation.** If `<agent>/operations/logs/<op>/` gets large, move old folders into an `_archive/` sub-folder manually.
 - **Op references to deleted files degrade gracefully.** The op runs anyway; the missing reference is noted in the op log; the agent proceeds with what's available.

@@ -33,7 +33,14 @@ Information enters a `<agent>/` folder only if it is **grounded**: directly stat
 
 ## Command surface
 
-There is one slash command: **`/agent`**. It dispatches to operations defined per-agent at `<agent>/operations/<op>.md`. Operations are the open extensible surface — add a new behaviour by creating an op file, not by authoring a new slash command.
+There is one slash command: **`/agent`**. It dispatches to operations.
+
+**Operations come in two flavours:**
+
+1. **Built-in operations** at `.claude/agent-operations/<op>.md` — shared workspace-level. The 10 seeded ops (converse, ingest, create-agent, manage-agent, create-entity, manage-entity, create-reference, manage-reference, create-op, manage-op) live here. Not duplicated per agent; not edited in normal use; updates come from the workspace template.
+2. **Per-agent operations** at `<agent>/operations/<op>.md` — user-defined, specific to one agent. Created via `/agent create-op`.
+
+`/agent` resolves built-ins first, then per-agent. Per-agent ops extend the surface; they do not override built-ins.
 
 See `agent-guide.md` for usage.
 

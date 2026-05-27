@@ -15,9 +15,10 @@ Add a new user-defined operation to this agent. Operations are the open extensib
 
 ## References
 
-- `<agent>/operations/INDEX.md` — to check for duplicates.
+- `<agent>/operations/INDEX.md` — per-agent ops; check for duplicates.
+- `.claude/agent-operations/INDEX.md` — built-ins; check that the proposed name doesn't shadow one (built-ins resolve first; a per-agent same-name op would be unreachable).
 - `<agent>/identity.md`.
-- `.claude/agent-templates/operations/create-op.md` — as the schema example.
+- `.claude/agent-operations/create-op.md` — this file, used as the schema example.
 
 ## Outputs
 
@@ -26,7 +27,7 @@ Add a new user-defined operation to this agent. Operations are the open extensib
 
 ## Steps
 
-1. **Elicit op name.** Reject if a file already exists at that name.
+1. **Elicit op name.** Reject if (a) a built-in op already uses that name (the built-in would shadow it; the user's per-agent op would never run), or (b) a per-agent op file already exists at that name in `<agent>/operations/`.
 2. **Walk the schema with the user.** One section at a time, in this order:
    - Purpose (one line)
    - Invocation (args)

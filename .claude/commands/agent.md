@@ -48,7 +48,7 @@ If the user-supplied path fails either check, respond:
 
   …and stop. Do NOT auto-bootstrap.
 
-- **`/agent create-agent`** is always valid at the workspace root, even when no agent yet exists. It is the only operation that may run without an existing agent. When invoked, read its template at `.claude/agent-templates/operations/create-agent.md` and follow it. (This operation copies all 10 default operation templates from `.claude/agent-templates/operations/` into the new agent's `operations/` folder.)
+- **`/agent create-agent`** is always valid at the workspace root, even when no agent yet exists. It is the only operation that may run without an existing agent. When invoked, read it from the built-in location `.claude/agent-operations/create-agent.md` and follow it. (This operation creates the agent's folder skeleton; built-in operations remain shared at the workspace level — they are NOT copied into the new agent.)
 
 - **`/agent create-agent` invoked from inside an existing agent folder** is rejected. Only valid at workspace root.
 
@@ -64,7 +64,11 @@ Once agent and operation are resolved:
 
    If the user opts to resolve, walk pending items one at a time; for each, present the parked content and ask the user to confirm / amend / drop. Confirmed items move to their target location in `<agent>/`; dropped items are deleted. Then proceed to the requested operation.
 
-4. **Load the operation.** Read `<agent>/operations/<op>.md`.
+4. **Resolve the operation.** Operations are resolved in this order:
+   1. **Built-in** at `.claude/agent-operations/<op>.md` — shared workspace-level operations. Checked first.
+   2. **Per-agent** at `<agent>/operations/<op>.md` — user-defined operations specific to this agent.
+
+   Read the resolved op file in full. (Built-ins are the canonical surface; per-agent ops extend rather than override — see "Unknown operation" below for the discovery flow.)
 5. **Load the operation's References.** For each entry in the operation's References section: if the entry targets a folder INDEX, read the INDEX first and navigate from there; if a single file, read it directly.
 6. **Read the operation's Inputs.** Apply user-supplied args per the operation's Invocation section. If the operation expects args the user did not supply, prompt for them.
 7. **Execute the operation's Steps.**
@@ -73,12 +77,16 @@ Once agent and operation are resolved:
 
 ## Unknown operation
 
-If the resolved operation does not exist at `<agent>/operations/<op>.md`:
+If the operation name resolves to neither `.claude/agent-operations/<op>.md` (built-in) nor `<agent>/operations/<op>.md` (per-agent):
 
-1. Read `<agent>/operations/INDEX.md` to list available operations.
-2. Respond:
+1. Read `.claude/agent-operations/INDEX.md` (built-ins).
+2. Read `<agent>/operations/INDEX.md` (per-agent, if it exists).
+3. Respond:
 
-   > Unknown operation `<op>` for agent `<agent>/`. Available: <list from INDEX>. To add a new operation, run `/agent <agent>/ create-op`.
+   > Unknown operation `<op>` for agent `<agent>/`.
+   > Built-in operations: <list from .claude/agent-operations/INDEX.md>
+   > Per-agent operations: <list from <agent>/operations/INDEX.md, or "(none)">.
+   > To add a new operation, run `/agent <agent>/ create-op`.
 
 …and stop.
 
