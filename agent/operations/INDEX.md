@@ -1,15 +1,13 @@
-# agent/operations/ — Operations
+# agent/operations/ — User-Defined Operations
+
+This index lists **user-defined operations** for this agent only.
+
+Built-in operations (`converse`, `ingest`, `create-agent`, `manage-agent`, `create-entity`, `manage-entity`, `create-reference`, `manage-reference`, `create-op`, `manage-op`) are shared workspace-wide at `.claude/agent-operations/` — see `.claude/agent-operations/INDEX.md` for that catalogue. The `/agent` dispatcher resolves built-ins first; user-defined ops here extend the surface.
+
+To add a new user-defined op: `/agent create-op`.
 
 | Path | Description |
 |---|---|
-| `converse.md` | Open-ended conversation with the agent (default mode of `/agent`). |
-| `ingest.md` | Bring outside information into the brain; distil into entity log or reference. |
-| `create-agent.md` | Bootstrap a new agent in this workspace. |
-| `manage-agent.md` | Edit this agent's identity. |
-| `create-entity.md` | Add a new tracked account / project / person / product. |
-| `manage-entity.md` | Structural edit to an existing entity (rename, move, archive, delete, profile edit). |
-| `create-reference.md` | Add durable reference material (template, methodology, glossary, rule). |
-| `manage-reference.md` | Edit / rename / move / delete an existing reference. |
-| `create-op.md` | Add a new user-defined operation to this agent. |
-| `manage-op.md` | Edit / rename / delete an existing op; sync from template. |
-| `logs/` | Per-operation invocation history (one folder per op). |
+| `logs/` | Per-operation invocation history (one folder per op — populated as ops run). |
+
+*No user-defined operations yet.*
