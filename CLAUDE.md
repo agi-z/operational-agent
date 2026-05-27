@@ -1,0 +1,46 @@
+# CLAUDE.md — Workspace Instructions
+
+This is a **shared brain** workspace. It hosts one or more **agents** that hold durable knowledge and act on it through a small, fixed command surface.
+
+## Workspace pattern
+
+This workspace can host **one or more agents**. Each agent occupies its own folder:
+
+- `agent/` — the **default** agent (no name). `/agent` with no folder argument targets this one.
+- `<name>-agent/` — named agents (e.g., `sales-agent/`, `compliance-agent/`).
+
+Each agent has a **paired output folder** at `<agent-folder>-output/` (so `agent/` ↔ `agent-output/`, `sales-agent/` ↔ `sales-agent-output/`).
+
+A workspace may have zero agents (then run `/agent create-agent` to bootstrap), one agent, or many.
+
+## Three-zone privacy model
+
+Every workspace has three kinds of zone:
+
+1. **`<agent>/` — the agent's brain.** Agent-managed; the user does not edit by hand. Holds identity, entities, references, operations, pending items, operation logs. **Strictly grounded** (see Grounding rule).
+2. **`<agent>-output/` — the user-facing pickup zone.** Where the agent writes generative artifacts (drafts, briefs, emails). One sub-folder per operation invocation, named `YYMMDD-N-<short>`. The user picks these up, edits, ships. **Exempt from the grounding rule** — these are intentionally generative.
+3. **`user/` — user-private, shared across agents.** Agents do not snoop. The only way information moves from `user/` into an agent's brain is through `/agent ingest <path>` initiated by the user.
+
+## Grounding rule
+
+Information enters a `<agent>/` folder only if it is **grounded**: directly stated in input, externally validated, or user-confirmed.
+
+- Direct ground-truth (statement in source; user assertion) → write through.
+- Direct/straightforward inference (date arithmetic; explicit implications) → write through with provenance.
+- Judgment-requiring inference (reading-between-lines; pattern-spotting) → confirm with user inline, OR park in `<agent>/pending/` for later resolution.
+
+**The grounding rule applies only to writes into `<agent>/`.** Writes into `<agent>-output/` are exempt.
+
+## Command surface
+
+There is one slash command: **`/agent`**. It dispatches to operations defined per-agent at `<agent>/operations/<op>.md`. Operations are the open extensible surface — add a new behaviour by creating an op file, not by authoring a new slash command.
+
+See `agent-guide.md` for usage.
+
+## Per-agent specifics
+
+Each agent's purpose, professional lens, responsibilities, and capabilities live in `<agent>/identity.md`. The dispatcher loads this in addition to this file when running an operation against that agent.
+
+## Discoverability
+
+Every folder carries an `INDEX.md` listing its contents. The exceptions are `user/` and its sub-folders, which are user-discretionary.
