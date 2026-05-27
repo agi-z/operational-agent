@@ -1,48 +1,50 @@
 # agent-guide.md — Using This Workspace
 
-A short guide for humans. (The agent reads `CLAUDE.md` and per-agent `identity.md` automatically.)
+A short guide for humans. (The agent reads `CLAUDE.md` automatically.)
+
+> **One agent or many?** This guide assumes you're running a single agent in this workspace — the most common case. If you want multiple agents (e.g., a sales agent and a compliance agent side-by-side), read this guide first, then `agent-guide-advanced.md`.
 
 ## What this is
 
-A workspace that hosts one or more **agents**. An "agent" here is **Claude wearing a hat** — Claude Code running with this workspace's `CLAUDE.md` plus a specific agent's `identity.md` loaded. Different agent folders = different hats for different contexts. There is no separate AI.
+A workspace that hosts an **agent**. The "agent" is **Claude wearing a hat** — Claude Code running with this workspace's `CLAUDE.md` plus the agent's `identity.md` loaded. There is no separate AI; the agent is the model with a specific role and brain attached.
 
-Each agent has its own **brain folder** (e.g., `agent/`, `sales-agent/`) holding what it knows, and a paired **output folder** (`agent-output/`, `sales-agent-output/`) for things it produces for you.
+The agent has a **brain folder** at `agent/` holding what it knows, and a paired **output folder** at `agent-output/` for things it produces for you.
 
 ## The three zones
 
 | Zone | Who edits | What's in it |
 |---|---|---|
-| `<agent>/` | the agent | identity, entities, references, operations, pending items, operation logs — the brain |
-| `<agent>-output/` | the agent (and then you) | generated drafts, briefs, emails — pickup zone |
-| `user/` | you only | your private notes, dumps, scratch — agents do not look in here |
+| `agent/` | the agent | identity, entities, references, operations, pending items, operation logs — the brain |
+| `agent-output/` | the agent (and then you) | generated drafts, briefs, emails — pickup zone |
+| `user/` | you only | your private notes, dumps, scratch — the agent does not look in here |
 
 ## The one command
 
 ```
-/agent [folder] [operation] [args...]
+/agent [operation] [args...]
 ```
 
-- `/agent` — open a converse session with the default agent at `agent/`.
-- `/agent <op>` — run `<op>` on the default agent.
-- `/agent <name>-agent/` — converse with a named agent. **Note the trailing slash** — it's how the dispatcher knows you mean a folder, not an op name.
-- `/agent <name>-agent/ <op>` — run `<op>` on a named agent.
+- `/agent` — open a converse session with the agent.
+- `/agent <op>` — run `<op>` (e.g., `/agent ingest`).
+- `/agent <op> <args>` — run with arguments (e.g., `/agent ingest user/notes.md`).
 
-## Common workflows
+## First time? Bootstrap the agent
 
-### Create a new agent
+If `agent/` doesn't exist yet, the workspace has no agent. Create one:
 
 ```
 /agent create-agent
 ```
 
-The dispatcher prompts for a name and walks you through identity (Quick path: purpose + lens + responsibilities; Deep path: full identity + seed entities/references). It then sets up the agent's folder skeleton and the paired output folder. The 10 built-in operations are NOT copied into the new agent — they live once at `.claude/agent-operations/` and are dispatched from there for every agent in the workspace.
+The dispatcher walks you through identity (Quick path: purpose + professional lens + responsibilities; Deep path: full identity + seed entities and references). It then sets up the agent's folder and the paired output folder. All built-in operations are immediately available — nothing to install per agent.
+
+## Common workflows
 
 ### Bring information into the agent's brain
 
 ```
 /agent ingest user/some-notes.md
 /agent ingest          # then paste, attach, or supply a path
-/agent sales-agent/ ingest user/call-recording-transcript.md
 ```
 
 The agent reads the source, distils it through its professional lens, and writes the distilled output into the right place in the brain (entity log entry, reference file, or a `pending/` item if it needs your judgment).
@@ -50,23 +52,22 @@ The agent reads the source, distils it through its professional lens, and writes
 ### Ask the agent something / draft something
 
 ```
-/agent                 # converse with default agent
-/agent sales-agent/    # converse with named agent
+/agent
 ```
 
-Free-form conversation. When the agent produces something save-worthy (a draft, brief, email), it offers to write it to `<agent>-output/YYMMDD-N-<short-name>/`.
+Free-form conversation. When the agent produces something save-worthy (a draft, brief, email), it offers to write it to `agent-output/YYMMDD-N-<short-name>/`.
 
 ### Resolve pending items
 
-When you start a converse session, the agent checks `<agent>/pending/` and offers to walk through any unverified judgment items before continuing.
+When you start a converse session, the agent checks `agent/pending/` and offers to walk through any unverified judgment items before continuing.
 
-### Add a new capability (operation)
+### Add a new capability
 
 ```
 /agent create-op
 ```
 
-Walks you through the operation schema. The new op then dispatches via `/agent <op-name>`.
+Walks you through the operation schema. The new op then dispatches via `/agent <op-name>`. (Created ops live in `agent/operations/` — your custom additions to this agent.)
 
 ## What operations are
 
@@ -74,20 +75,23 @@ Operations are how the agent does things. Each operation is a markdown file with
 
 Operations live in two places:
 
-- **Built-in** at `.claude/agent-operations/<op>.md` — the 10 seeded ops (`converse`, `ingest`, `create-agent`, `manage-agent`, `create-entity`, `manage-entity`, `create-reference`, `manage-reference`, `create-op`, `manage-op`). Shared across every agent in this workspace. Not duplicated per agent. **Don't edit by hand** — they're managed at the workspace level (template updates come through `git pull` on the workspace repo).
-- **Per-agent** at `<agent>/operations/<op>.md` — operations you author for a specific agent via `/agent create-op`. Extend the built-in surface for that agent only.
+- **Built-in** at `.claude/agent-operations/<op>.md` — the 10 ops shipped with the workspace (`converse`, `ingest`, `create-agent`, `manage-agent`, `create-entity`, `manage-entity`, `create-reference`, `manage-reference`, `create-op`, `manage-op`). **Don't edit by hand** — they're managed at the workspace level (updates come through `git pull` on the workspace repo).
+- **Per-agent** at `agent/operations/<op>.md` — operations you author for this agent via `/agent create-op`. These extend the built-in surface.
 
-The dispatcher checks built-ins first. If you want to extend an agent's behaviour, `/agent create-op` writes a new per-agent op file under `<agent>/operations/`. To add a brand-new capability across the whole workspace, that's a template-level change (workspace repo, not per-agent).
+The dispatcher checks built-ins first. To extend behaviour, `/agent create-op` writes a new per-agent op file. To add a brand-new capability across the whole workspace, that's a template-level change to the workspace repo.
 
 ## The grounding rule (short version)
 
-Anything that ends up in `<agent>/` must trace back to either: (a) direct input, (b) external source, or (c) your explicit confirmation. The agent will park ambiguous judgment items in `<agent>/pending/` and surface them next time you converse.
+Anything that ends up in `agent/` must trace back to either: (a) direct input, (b) external source, or (c) your explicit confirmation. The agent will park ambiguous judgment items in `agent/pending/` and surface them next time you converse.
 
-Outputs in `<agent>-output/` are exempt — those are generative on purpose; you verify them when you use them.
+Outputs in `agent-output/` are exempt — those are generative on purpose; you verify them when you use them.
 
 ## v1 limitations to know
 
-- **No cross-agent reference sharing.** Each agent owns its own `<agent>/references/`. If two agents in the same workspace need the same rule set, copy it manually. (v2: workspace-level `shared-references/`.)
-- **Built-in op updates need workspace-repo pull.** Built-ins live at `.claude/agent-operations/` and update through the workspace repo (e.g., `git pull` if the workspace is a submodule). They are not per-agent and do not need syncing — every agent always sees the current built-in.
-- **Operation logs accumulate without rotation.** If `<agent>/operations/logs/<op>/` gets large, move old folders into an `_archive/` sub-folder manually.
+- **Built-in op updates need workspace-repo pull.** Built-ins live at `.claude/agent-operations/` and update through the workspace repo. They are not per-agent and do not need syncing — the agent always sees the current built-in.
+- **Operation logs accumulate without rotation.** If `agent/operations/logs/<op>/` gets large, move old folders into an `_archive/` sub-folder manually.
 - **Op references to deleted files degrade gracefully.** The op runs anyway; the missing reference is noted in the op log; the agent proceeds with what's available.
+
+## Going further
+
+Need to run more than one agent in this workspace? See `agent-guide-advanced.md`.

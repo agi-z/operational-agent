@@ -42,7 +42,7 @@ There is one slash command: **`/agent`**. It dispatches to operations.
 
 `/agent` resolves built-ins first, then per-agent. Per-agent ops extend the surface; they do not override built-ins.
 
-See `agent-guide.md` for usage.
+See `agent-guide.md` for single-agent usage (the common case). See `agent-guide-advanced.md` for multi-agent workspaces.
 
 ## Per-agent specifics
 
