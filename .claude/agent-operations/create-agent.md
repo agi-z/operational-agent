@@ -33,25 +33,26 @@ Bootstrap a new agent in this workspace: create the agent folder skeleton (ident
 ## Steps
 
 1. **Verify invocation context.** If invoked from inside an existing agent folder, reject: "create-agent must be run at workspace root." Stop.
-2. **Elicit name.** Ask: "What is the name of this agent? (e.g., `sales`, `compliance`. The bare default agent uses `agent` — pick a different name if `agent/` already exists.)"
-   - Reject the literal name `agent` if `agent/` already exists.
+2. **Elicit name.** Ask: "What is the name of this agent? (e.g., `sales`, `compliance`.)"
+   - **Reject the literal name `agent` unconditionally.** The default `agent/` folder is only chosen when the user explicitly elects "default unnamed agent" during bootstrap (see step below), NOT via a typed name. A user typing `agent` is always rejected; ask for a different name.
    - Reject names already ending in `-agent` (avoid `sales-agent-agent/`).
-   - Apply suffix: `sales` → folder `sales-agent/`. (Bare default agent — name `agent` and no folder yet — uses folder `agent/`.)
-3. **Choose elicitation depth.** Ask: "Quick (3 fields: purpose + professional lens + one-line responsibilities — defer entities/references) or Deep (full identity + seed entities/references)?" Default: Quick for non-developer attendees.
-4. **Quick path.** Gather:
+   - Apply suffix: `sales` → folder `sales-agent/`.
+3. **First-agent bootstrap.** If this is the first agent in the workspace (no `agent/` and no `*-agent/` folder exists yet), prompt: "Create the default unnamed agent (folder `agent/`), or a named agent (folder `<name>-agent/`)?" If user picks default, scaffold `agent/` (no name required). If user picks named, request the name (which then runs through the suffix and reserved-name rules).
+4. **Choose elicitation depth.** Ask: "Quick (3 fields: purpose + professional lens + one-line responsibilities — defer entities/references) or Deep (full identity + seed entities/references)?" Default: Quick for non-developer attendees.
+5. **Quick path.** Gather:
    - Purpose (one paragraph)
    - Professional lens (one sentence — the perspective this agent reasons through)
    - Responsibilities (3-5 bullets)
    - Generate Capabilities and Constraints with a sensible default and ask the user to confirm/edit.
-5. **Deep path.** Same as Quick plus walk through Capabilities, Constraints, and seed entries for entities/references the user wants pre-loaded.
-6. **Write `identity.md`** using the template at the bottom of this file. Populate the sibling-file lookup table.
-7. **Create folder scaffold.** Make `entities/`, `references/`, `operations/`, `operations/logs/`, `pending/`; write empty `INDEX.md` in each.
-8. **Write `<agent>/operations/INDEX.md`** as an empty scaffold with a header noting "This index lists user-defined operations for this agent only. Built-in operations are shared at `.claude/agent-operations/INDEX.md`."
-9. **Create paired output folder** `<name>-agent-output/` (or `agent-output/`) with `README.md` and empty `INDEX.md`.
-10. **Write `<agent>/INDEX.md`** — root index for the agent folder, listing identity.md and the sub-folders.
-11. **Update root `INDEX.md`** to include the new agent and its output folder.
-12. **Confirm to user** with a summary, the next-step hint (`/agent <name>-agent/` to converse), and a note that all 10 built-in operations are available immediately without per-agent setup.
-13. **Log the invocation.**
+6. **Deep path.** Same as Quick plus walk through Capabilities, Constraints, and seed entries for entities/references the user wants pre-loaded.
+7. **Write `identity.md`** using the template at the bottom of this file. Populate the sibling-file lookup table.
+8. **Create folder scaffold.** Make `entities/`, `references/`, `operations/`, `operations/logs/`, `pending/`; write empty `INDEX.md` in each.
+9. **Write `<agent>/operations/INDEX.md`** as an empty scaffold with a header noting "This index lists user-defined operations for this agent only. Built-in operations are shared at `.claude/agent-operations/INDEX.md`."
+10. **Create paired output folder** `<name>-agent-output/` (or `agent-output/`) with `README.md` and empty `INDEX.md`.
+11. **Write `<agent>/INDEX.md`** — root index for the agent folder, listing identity.md and the sub-folders.
+12. **Update root `INDEX.md`** to include the new agent and its output folder.
+13. **Confirm to user** with a summary, the next-step hint (`/agent <name>-agent/` to converse), and a note that all 10 built-in operations are available immediately without per-agent setup.
+14. **Log the invocation** AFTER the agent folder scaffold is created (this is the first entry written into the new folder's operations/logs/). Create `<agent>/operations/logs/create-agent/INDEX.md` lazily, then append the log entry per dispatcher § Dispatch procedure step 9.
 
 ## Grounding-rule application
 

@@ -4,6 +4,8 @@ These are the **built-in operations** shipped with the workspace. They live here
 
 **Do not edit these files in normal use.** They are the canonical built-in surface; updates come through the workspace template (e.g., `git pull` on the workspace submodule). To add or customize behaviour for a specific agent, create a user-defined op via `/agent <agent>/ create-op` — that goes into `<agent>/operations/` and is dispatched only when no built-in matches.
 
+All invocations also work in the form `/agent <name>-agent/ <op> [args]` to target a named agent.
+
 | Operation | Invocation | Description |
 |---|---|---|
 | `converse` | `/agent` (default) or `/agent converse` | Conversation; impart info, perform tasks, refine outputs. |

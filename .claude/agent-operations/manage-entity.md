@@ -26,9 +26,10 @@ Make **structural** changes to an existing entity: rename, move (re-parent), edi
 
 ## Steps
 
+0. **Target check.** If the entity slug does not resolve to an existing folder under `<agent>/entities/`, respond: 'No such entity `<slug>`; run `/agent create-entity` to create one.' Stop.
 1. Resolve the entity. If slug ambiguous, list candidates and prompt.
 2. Ask what kind of change: rename | re-parent | edit profile | archive | delete.
-3. **Rename.** New slug; move folder; update parent `entities/INDEX.md`. **Rewrite internal cross-refs:** grep `<agent>/` (excluding `<agent>/operations/logs/` which is historical record) for the old slug path; for each hit, present old → new and confirm before editing. Common rewrite targets: other entities' log entries that mention this one, references that link to it, pending items.
+3. **Rename.** New slug; move folder; update parent `entities/INDEX.md`. **Cross-ref rewrite scope.** On rename, rewrite cross-references in: `<agent>/<entity>/profile.md` and sub-entity profile.md files (relative paths and parent references); references in `<agent>/references/`; pending items targeting this entity. **Do NOT rewrite:** entity `log/` entries (dated historical record), operation logs under `<agent>/operations/logs/`, `<agent>-output/` sub-folders (frozen snapshots). For each in-scope hit, present old → new and confirm before editing.
 4. **Re-parent.** Move folder to new parent; update both old and new parent INDEX.md.
 5. **Edit profile.** Walk through `profile.md` sections; show old → new; write.
 6. **Archive.** Move to `<agent>/entities/_archive/<slug>/`; remove from active INDEX; note in log.
@@ -38,8 +39,7 @@ Make **structural** changes to an existing entity: rename, move (re-parent), edi
 
 ## Grounding-rule application
 
-- Profile edits — user-confirmed → direct ground-truth.
-- Structural changes (rename/move/delete) are not factual content; no grounding test.
+- **Profile-content edits reapply the grounding test.** Structural edits (rename, move/re-parent, archive, delete) are exempt. Factual-content edits to `profile.md` are NOT exempt: classify each edit as direct / direct-inference / judgment. Judgment-requiring content goes through the pending-park flow (frontmatter per `agent.md` § Pending file shape; update `pending/INDEX.md`).
 
 ## Logging
 

@@ -31,11 +31,11 @@ Hold an open-ended conversation with the user as this agent. Default mode of `/a
 
 ## Steps
 
-1. **Pending check at session start.** If this is the first turn AND `<agent>/pending/INDEX.md` lists items, surface the count and offer to resolve before continuing.
+1. **Pending check.** Delegated to dispatcher (§ Dispatch procedure step 3). When this op begins, pending resolution has already completed if it was offered.
 2. **Listen.** Read the user's turn through the lens declared in `identity.md` § Professional lens.
 3. **Read lazily.** When the conversation references an entity or reference, consult that file (via the lookup table or the relevant INDEX).
 4. **Respond.** Stay in the professional lens. Distinguish what you know (grounded in the brain) from what you're inferring or asking for.
-5. **Multi-perspective refine (gated trigger).** Apply this before finalizing if the output is BOTH (a) destined for `<agent>-output/` (i.e., a generative artifact the user will use externally) AND (b) substantive — an email to a named recipient, a brief, a status doc, a plan, a recommendation, a draft sent to a third party. **Skip** for short factual answers, in-conversation summaries, and any internal-only content. When triggered: do a self-review pass naming 2-3 perspectives (e.g., "as the recipient", "as a sceptic", "as the user's manager"). Adjust. Surface the perspectives used to the user.
+5. **Multi-perspective refine (gated trigger).** Multi-perspective refine fires when the drafted artifact is destined for `<agent>-output/` AND is not in the skip list (skip list: short factual answers, one-liner replies, confirmations, lookups). Use the inverted test to avoid second-guessing whether a particular artifact is 'substantive enough.' When triggered: do a self-review pass naming 2-3 perspectives (e.g., "as the recipient", "as a sceptic", "as the user's manager"). Adjust. Surface the perspectives used to the user.
 6. **Offer to persist.** If the turn produces a saveable artifact, ask the user whether to save it to `<agent>-output/` (with a suggested short name) or to log a fact into the brain.
 7. **Apply grounding rule** for any brain-bound write (see below).
 
@@ -45,7 +45,7 @@ Hold an open-ended conversation with the user as this agent. Default mode of `/a
 - **For any write the user requests into `<agent>/`** (e.g., a confirmed fact into an entity log):
   - Direct ground-truth (the user just stated it; an input doc carried it) → write through.
   - Direct/straightforward inference (e.g., date arithmetic) → write through with provenance noted.
-  - Judgment-requiring inference → either confirm with the user inline, OR park in `<agent>/pending/YYMMDD-N-<short>.md` and link from the log entry.
+  - Judgment-requiring inference → either confirm with the user inline, OR park in `<agent>/pending/YYMMDD-N-<short>.md` and link from the log entry. Then append a row to `<agent>/pending/INDEX.md` (`path | <question>`). The pending file MUST use the standard pending-file frontmatter (see `agent.md` § Pending file shape).
 - **Writes into `<agent>-output/` are exempt** — generative artifacts go through as drafted.
 
 ## Logging

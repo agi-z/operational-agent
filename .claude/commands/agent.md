@@ -48,17 +48,36 @@ If the user-supplied path fails either check, respond:
 
   …and stop. Do NOT auto-bootstrap.
 
-- **`/agent create-agent`** is always valid at the workspace root, even when no agent yet exists. It is the only operation that may run without an existing agent. When invoked, read it from the built-in location `.claude/agent-operations/create-agent.md` and follow it. (This operation creates the agent's folder skeleton; built-in operations remain shared at the workspace level — they are NOT copied into the new agent.)
+- **`/agent create-agent`** is always valid at the workspace root, even when no agent yet exists. It is the only operation that may run without an existing agent. When invoked, read it from the built-in location `.claude/agent-operations/create-agent.md` and follow it. (This operation creates the agent's folder skeleton; built-in operations remain shared at the workspace level — they are NOT copied into the new agent.) When the resolved op is `create-agent`, skip steps 1–3 of the Dispatch procedure (workspace context is already loaded; no agent identity exists yet; no pending state to check); resolve and execute the op file directly from `.claude/agent-operations/create-agent.md`.
 
 - **`/agent create-agent` invoked from inside an existing agent folder** is rejected. Only valid at workspace root.
+
+## Pending file shape
+
+Each entry at `<agent>/pending/YYMMDD-N-<short>.md` carries this frontmatter:
+
+```yaml
+---
+source: <provenance — source path, op invocation, or "user dialog">
+op: <op that parked the entry>
+written-at: <YYYY-MM-DD HH:MM>
+target: <intended destination path inside <agent>/ if confirmed>
+question: <one-line judgment the user must resolve>
+---
+
+<body — the unverified content as it would be written if confirmed>
+```
+
+Every op that writes a pending file MUST also append a row to `<agent>/pending/INDEX.md` (`path | <question>`). The session-start pending-check reads this INDEX.
 
 ## Dispatch procedure
 
 Once agent and operation are resolved:
 
+0. **Verify the resolved agent folder exists** and passes the agent-folder recognition rule. If not, emit the no-agent-at-path message from § Agent folder recognition and stop. (Exception: `create-agent` — see § Bootstrap handling.)
 1. **Load workspace context.** `CLAUDE.md` is already loaded by Claude Code.
 2. **Load the agent's identity.** Read `<agent>/identity.md` in full.
-3. **Pending check (converse mode only, session start).** If the resolved operation is `converse` AND this is the first turn of the session, read `<agent>/pending/INDEX.md`. If it lists one or more pending items, surface the count and offer to resolve them before proceeding:
+3. **Pending check (converse mode only, session start).** If the resolved operation is `converse` AND this is the first `/agent` converse invocation in this Claude Code session for this agent folder (subsequent converse invocations in the same session skip this check), read `<agent>/pending/INDEX.md`. If it lists one or more pending items, surface the count and offer to resolve them before proceeding:
 
    > You have N pending item(s) awaiting verification. Resolve now, or continue to converse? [resolve | continue]
 
@@ -83,7 +102,8 @@ If the operation name resolves to neither `.claude/agent-operations/<op>.md` (bu
 
 1. Read `.claude/agent-operations/INDEX.md` (built-ins).
 2. Read `<agent>/operations/INDEX.md` (per-agent, if it exists).
-3. Respond:
+3. **Heuristic:** if `<op>` matches the pattern `*-agent` (looks like a missing-slash agent folder name), suggest the corrected form before listing operations: `Did you mean \`/agent <op>/\`?`. Then proceed with the unknown-operation listing below.
+4. Respond:
 
    > Unknown operation `<op>` for agent `<agent>/`.
    > Built-in operations: <list from .claude/agent-operations/INDEX.md>

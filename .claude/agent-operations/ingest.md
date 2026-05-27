@@ -44,7 +44,7 @@ Source file is NOT moved or modified; the distilled output carries provenance ba
    - **(d) Noise / not relevant under this lens** → go to step 3d.
 3a. **Match entity.** Consult `<agent>/entities/INDEX.md` and confirm the match with the user if any ambiguity. Target `<agent>/entities/<entity>/log/`. Proceed to step 4.
 3b. **Propose new entity.** Surface to user: "this material doesn't match any tracked entity. Options: (1) skip; (2) create new entity now and route the distilled content; (3) park in pending until you decide." Default (2); require user confirmation of new entity slug before creating. On confirm, scaffold the entity folder (profile + log) inline; do NOT defer to `create-entity` (operations are atomic). Then proceed to step 4 with the new entity as target.
-3c. **Route to references.** Confirm with user: "this looks like durable reference material — route to `<agent>/references/<...>` instead of an entity log?" If user agrees, route output to `<agent>/references/`; if they want it kept against a specific entity, fall back to step 3a.
+3c. **Route to references.** Confirm with user: "this looks like durable reference material — route to `<agent>/references/<...>` instead of an entity log?" If user agrees, route output to `<agent>/references/`; if they want it kept against a specific entity, fall back to step 3a. Consult `<agent>/references/INDEX.md` to choose an appropriate sub-folder (e.g., `references/templates/`, `references/rules/`, or top-level). If no existing sub-folder fits, ask the user whether to create one. Default to top-level if uncertain.
 3d. **Surface "no fit".** Tell the user: "this material doesn't fit the agent's brain under its current lens — skip, or override (route anyway)?" If skip: log the invocation with `outcome: skipped-as-noise`, write no content, stop. If override: ask the user to specify entity or reference target, then proceed.
 4. **Distil.** Extract the grounded facts. Note dates, named parties, decisions, commitments. Separate quote-able content from inference.
 5. **Apply grounding rule** (see below).
@@ -59,7 +59,7 @@ Source file is NOT moved or modified; the distilled output carries provenance ba
 
 - Direct ground-truth (statements in the source) → write through; cite the source path in frontmatter.
 - Direct/straightforward inference (date arithmetic; explicit follow-up implications) → write through; mark as `inferred-direct` in frontmatter.
-- Judgment-requiring inference (reading-between-lines; tone; pattern-spotting) → either confirm with user inline, OR write the verified content to its target AND park the unverified judgment items at `<agent>/pending/YYMMDD-N-<short>.md`. The pending file references the source and the partial entity-log entry.
+- Judgment-requiring inference (reading-between-lines; tone; pattern-spotting) → either confirm with user inline, OR write the verified content to its target AND park the unverified judgment items at `<agent>/pending/YYMMDD-N-<short>.md` using the standard pending-file frontmatter (see `agent.md` § Pending file shape) AND append a row to `<agent>/pending/INDEX.md` (step 7 covers the INDEX append). The pending file references the source and the partial entity-log entry.
 
 ## Logging
 

@@ -35,10 +35,11 @@ Add a durable reference to this agent's brain. References are factual material t
 3. **Check for duplicates** in `references/INDEX.md` and target folder INDEX.
 4. **Elicit content.** Accept typed, pasted, or path-based input. If source is a file path, ask the user whether to inline the content or reference the source path.
 5. **Elicit source** (for frontmatter): citation, URL, "user-authored", or path.
-6. **Apply grounding rule.**
+6. **Apply grounding rule.** For each piece of content: if direct ground-truth (external published material; user-authored) or direct-inference, write through into the reference file. If judgment-requiring AND the user declines inline confirmation, park at `<agent>/pending/YYMMDD-N-<slug>-<field>.md` (frontmatter per `agent.md` § Pending file shape; `target` = the reference file path; `question` = the user-decision needed) AND append a row to `<agent>/pending/INDEX.md`. Omit the unresolved content from the reference file until resolved.
 7. **Write the reference file** with frontmatter.
 8. **Update INDEX.md** at each affected level (target folder + any parent INDEXes if the path is new).
-9. **Log.**
+9. **Confirm to user.** Summarize the created reference and offer next-step hints: `/agent ingest <path>` (route material into this reference), or `/agent manage-reference <slug> restructure` (promote single-file to folder-with-INDEX when content grows).
+10. **Log.**
 
 ## Grounding-rule application
 

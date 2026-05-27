@@ -33,12 +33,13 @@ Add a new entity to this agent's brain. An entity is a thing the agent is about 
 2. **Check for duplicates** in `entities/INDEX.md`. If a similar name exists, surface and confirm.
 3. **Sub-entity?** Ask whether this nests under an existing entity. If yes, target `<parent>/<slug>/`.
 4. **Elicit profile fields.** Standard: stakeholders, current state, key dates, constraints, history snapshot. Adjust prompts per professional lens.
-5. **Apply grounding rule** as user provides content (see below).
+5. **Apply grounding rule to elicited fields.** For each field provided: if direct ground-truth or direct-inference, accept and write into `profile.md`. If judgment-requiring AND the user declines inline confirmation, park at `<agent>/pending/YYMMDD-N-<entity>-<field>.md` (frontmatter per `agent.md` § Pending file shape; `target` = the profile.md path; `question` = the user-decision needed) AND append a row to `<agent>/pending/INDEX.md`. Omit the field from `profile.md` until resolved.
 6. **Write `profile.md`** with frontmatter.
 7. **Create `log/` folder and empty `log/INDEX.md`.**
 8. **Write entity-folder `INDEX.md`** listing `profile.md` and `log/`.
 9. **Update parent `entities/INDEX.md`.**
-10. **Log.**
+10. **Confirm to user.** Summarize the created entity and offer the next-step hint: `/agent ingest <path>` to populate the entity's log, or `/agent manage-entity <slug>` to edit.
+11. **Log.**
 
 ## Grounding-rule application
 
