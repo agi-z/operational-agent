@@ -2,5 +2,4 @@
 
 | Path | Description |
 |---|---|
-
-*(no invocations logged yet — populated as operations run.)*
+| `draft-follow-up/` | Invocations of the `draft-follow-up` user-defined operation. |

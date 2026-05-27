@@ -8,6 +8,5 @@ To add a new user-defined op: `/agent create-op`.
 
 | Path | Description |
 |---|---|
-| `logs/` | Per-operation invocation history (one folder per op — populated as ops run). |
-
-*No user-defined operations yet.*
+| `draft-follow-up.md` | Draft a follow-up email for a tracked account, optionally steered by intent (recap, nudge, next-steps, intro-response). |
+| `logs/` | Per-operation invocation history (one folder per op). |

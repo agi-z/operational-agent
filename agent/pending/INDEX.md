@@ -2,5 +2,4 @@
 
 | Path | Description |
 |---|---|
-
-*(no pending items — surfaced at next `/agent` converse session as the count drops to zero.)*
+| `260513-1-acme-extension-ambiguity.md` | Sarah mentioned a "two-week extension" without specifying what — needs clarification. |
