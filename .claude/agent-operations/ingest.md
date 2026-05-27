@@ -37,14 +37,23 @@ Source file is NOT moved or modified; the distilled output carries provenance ba
 ## Steps
 
 1. **Acquire source.** Read the file at `<path>` if given; otherwise prompt for paste / attachment / path.
-2. **Classify.** Through the professional lens, decide: is this about a tracked entity? a new entity? a durable reference? noise?
-3. **Match entity.** Consult `<agent>/entities/INDEX.md`. If a match exists, target `<agent>/entities/<entity>/log/`.
-4. **No matching entity.** Surface to user: "this material doesn't match any tracked entity. Options: (1) skip; (2) create new entity now and route the distilled content; (3) park in pending until you decide." Default to (2); require user confirmation of new entity name before creating.
-5. **Distil.** Extract the grounded facts. Note dates, named parties, decisions, commitments. Separate quote-able content from inference.
-6. **Apply grounding rule** (see below).
-7. **Write the output** with frontmatter (see template below).
-8. **Update relevant INDEX.md** entries (entity profile last-touched, references INDEX line, etc.).
-9. **Log the invocation.**
+2. **Classify.** Through the professional lens, decide which branch applies:
+   - **(a) About a tracked entity** → go to step 3a.
+   - **(b) About a new entity** → go to step 3b.
+   - **(c) Durable reference material** (regulation, methodology, glossary, template — not entity-specific) → go to step 3c.
+   - **(d) Noise / not relevant under this lens** → go to step 3d.
+3a. **Match entity.** Consult `<agent>/entities/INDEX.md` and confirm the match with the user if any ambiguity. Target `<agent>/entities/<entity>/log/`. Proceed to step 4.
+3b. **Propose new entity.** Surface to user: "this material doesn't match any tracked entity. Options: (1) skip; (2) create new entity now and route the distilled content; (3) park in pending until you decide." Default (2); require user confirmation of new entity slug before creating. On confirm, scaffold the entity folder (profile + log) inline; do NOT defer to `create-entity` (operations are atomic). Then proceed to step 4 with the new entity as target.
+3c. **Route to references.** Confirm with user: "this looks like durable reference material — route to `<agent>/references/<...>` instead of an entity log?" If user agrees, route output to `<agent>/references/`; if they want it kept against a specific entity, fall back to step 3a.
+3d. **Surface "no fit".** Tell the user: "this material doesn't fit the agent's brain under its current lens — skip, or override (route anyway)?" If skip: log the invocation with `outcome: skipped-as-noise`, write no content, stop. If override: ask the user to specify entity or reference target, then proceed.
+4. **Distil.** Extract the grounded facts. Note dates, named parties, decisions, commitments. Separate quote-able content from inference.
+5. **Apply grounding rule** (see below).
+6. **Write the output** with frontmatter (see template below). For entity log entries, use `<agent>/entities/<entity>/log/YYMMDD-N-<short>.md`; for references, `<agent>/references/<...>.md` (per `create-reference`'s nesting rules); for pending, `<agent>/pending/YYMMDD-N-<short>.md`.
+7. **Update relevant INDEX.md** entries:
+   - For entity log writes: append the new entry row to the entity's `log/INDEX.md`; bump the entity profile's `last-touched` frontmatter to today's date.
+   - For new reference writes: append a row to the appropriate `references/.../INDEX.md`.
+   - For pending writes: append a row to `<agent>/pending/INDEX.md`.
+8. **Log the invocation.**
 
 ## Grounding-rule application
 

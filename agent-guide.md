@@ -30,13 +30,16 @@ The agent has a **brain folder** at `agent/` holding what it knows, and a paired
 
 ## First time? Bootstrap the agent
 
-If `agent/` doesn't exist yet, the workspace has no agent. (If you cloned a populated workspace, skip ahead to the workflows.)
+**Look in the file tree.** If you see an `agent/` folder, the agent already exists — skip to the workflows below. If you don't, you're starting fresh and your first action is:
 
 ```
 /agent create-agent
 ```
 
-The dispatcher walks you through identity — Quick path (3 fields: purpose + professional lens + responsibilities) or Deep path (full identity + seed entities and references).
+The dispatcher walks you through identity. You pick one of two paths:
+
+- **Quick** (recommended for first try) — 3 fields: purpose, professional lens, one-line responsibilities. Defers entities and references to set up later through `ingest`.
+- **Deep** — full identity plus seed entries for entities and references you want to start with.
 
 **About "professional lens":** the perspective the agent reasons through. *"Sales / partnership"* and *"compliance officer"* are different lenses — they make the agent emphasize different things in the same raw input. One sentence is enough.
 
@@ -81,6 +84,8 @@ Walks you through the operation schema. The new op then dispatches via `/agent <
 
 ### Customize how an existing built-in behaves
 
+*(Skip on first read — you only need this once you've been using the agent for a while and want to tune it.)*
+
 You can't edit a built-in directly (they're shared at the workspace level and managed there). Two ways to customize behaviour for your agent:
 
 - **Tune the agent's identity.** Built-in ops read `agent/identity.md` and let its professional lens shape their behaviour. Often the simplest fix — sharpening the lens changes how `ingest`, `converse`, etc. extract and frame content.
@@ -105,7 +110,7 @@ Outputs in `agent-output/` are exempt — those are generative on purpose; you v
 
 ## v1 limitations to know
 
-- **Built-in op updates need workspace-repo pull.** Built-ins live at `.claude/agent-operations/` and update through the workspace repo. They are not per-agent and do not need syncing — the agent always sees the current built-in.
+- **Built-in operations are shared, not per-agent.** All agents in this workspace see the same built-ins from `.claude/agent-operations/`. There's nothing to install or sync per agent — the agent always sees the current built-in. Updates to the built-ins themselves happen at the workspace level (whoever maintains this workspace).
 - **Operation logs accumulate without rotation.** If `agent/operations/logs/<op>/` gets large, move old folders into an `_archive/` sub-folder manually.
 - **Op references to deleted files degrade gracefully.** The op runs anyway; the missing reference is noted in the op log; the agent proceeds with what's available.
 

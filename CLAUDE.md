@@ -1,5 +1,7 @@
 # CLAUDE.md — Workspace Instructions
 
+> *Auto-loaded by Claude on every session in this workspace. **Humans:** you don't need to read this; open `agent-guide.md` for a friendlier introduction.*
+
 This is a **shared brain** workspace. It hosts one or more **agents** that hold durable knowledge and act on it through a small, fixed command surface.
 
 ## Workspace pattern
@@ -50,4 +52,14 @@ Each agent's purpose, professional lens, responsibilities, and capabilities live
 
 ## Discoverability
 
-Every folder carries an `INDEX.md` listing its contents. The exceptions are `user/` and its sub-folders, which are user-discretionary.
+Every folder carries an `INDEX.md` listing its contents — a two-column markdown table: path | one-line description. Append a new row when adding a file/sub-folder; remove the row when deleting.
+
+**Exceptions to "every folder has INDEX.md":**
+
+- `user/` and its sub-folders — user-discretionary (the user owns this zone).
+- `.claude/` and its sub-folders — framework-managed (tooling layer; not for browsing by agents or users).
+
+## Workspace-wide conventions
+
+- **`YYMMDD-N-<short>` naming.** Used for operation logs, entity logs, pending items, and `<agent>-output/` sub-folders. *YYMMDD* = invocation date; *N* = per-day sequence starting at 1. To pick `N`, scan the target folder for entries with today's `YYMMDD` prefix and use `max(existing N) + 1`; use `1` if none today. `<short>` is a 3-5 word kebab summary.
+- **`_archive/` sub-folder.** Optional in any folder that accumulates entries over time (entity folders, log folders, references). To archive without deleting, move the target into a sibling `_archive/` sub-folder; remove the row from the active `INDEX.md`. Not scaffolded by `create-agent` — created lazily on first archive.

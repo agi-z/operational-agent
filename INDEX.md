@@ -3,6 +3,7 @@
 | Path | Description |
 |---|---|
 | `CLAUDE.md` | Auto-loaded workspace instructions (pattern, privacy zones, grounding rule). |
+| `LICENSE` | Project licence. |
 | `agent-guide.md` | Human-facing usage guide. Single-agent workflows; start here. |
 | `agent-guide-advanced.md` | Advanced guide — multi-agent workspaces. Read after the basic guide. |
 | `.claude/commands/agent.md` | The single dispatcher command. |

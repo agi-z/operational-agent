@@ -27,7 +27,11 @@ Edit, rename, move, archive, or delete an existing reference.
 
 1. Resolve the reference. If ambiguous, list candidates and prompt.
 2. Ask: edit content | rename | move (re-categorise) | archive | delete.
-3. Execute the action; for edits, walk through sections.
+3. Execute the action:
+   - **Edit content.** References don't have a fixed section schema; show the user the file and ask which part to change (or accept a wholesale replacement). Show old → new before writing.
+   - **Rename / move.** **Rewrite internal cross-refs:** grep `<agent>/` (excluding `<agent>/operations/logs/`) for the old path; for each hit, present old → new and confirm. Common targets: entity logs and other references that link to this one.
+   - **Archive.** Move into a sibling `_archive/` folder; remove from active INDEX; note in log.
+   - **Delete.** Confirm twice. Remove file. Note in log.
 4. Update INDEX.md at affected levels.
 5. Log.
 

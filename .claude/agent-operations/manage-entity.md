@@ -28,7 +28,7 @@ Make **structural** changes to an existing entity: rename, move (re-parent), edi
 
 1. Resolve the entity. If slug ambiguous, list candidates and prompt.
 2. Ask what kind of change: rename | re-parent | edit profile | archive | delete.
-3. **Rename.** New slug; move folder; update parent `entities/INDEX.md`; rewrite any internal cross-refs.
+3. **Rename.** New slug; move folder; update parent `entities/INDEX.md`. **Rewrite internal cross-refs:** grep `<agent>/` (excluding `<agent>/operations/logs/` which is historical record) for the old slug path; for each hit, present old → new and confirm before editing. Common rewrite targets: other entities' log entries that mention this one, references that link to it, pending items.
 4. **Re-parent.** Move folder to new parent; update both old and new parent INDEX.md.
 5. **Edit profile.** Walk through `profile.md` sections; show old → new; write.
 6. **Archive.** Move to `<agent>/entities/_archive/<slug>/`; remove from active INDEX; note in log.

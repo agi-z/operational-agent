@@ -74,6 +74,8 @@ Once agent and operation are resolved:
 7. **Execute the operation's Steps.**
 8. **Apply the grounding rule** as the operation's Grounding-rule application section directs (writes into `<agent>/` only; `<agent>-output/` is exempt).
 9. **Log the invocation** per the operation's Logging section: write an entry at `<agent>/operations/logs/<op>/YYMMDD-N-<short>.md` with the standard frontmatter (timestamp, input summary, output references, pending items created, outcome).
+   - **Picking `N`:** scan `<agent>/operations/logs/<op>/` for files with today's `YYMMDD` prefix; use `max(existing N) + 1`, or `1` if none. (Same rule applies to every `YYMMDD-N-...` path in the workspace — entity logs, pending items, `<agent>-output/` sub-folders.)
+   - **Lazy INDEX.md.** If `<agent>/operations/logs/<op>/INDEX.md` does not exist (this is the first invocation logged for this op on this agent), create it with the standard two-column header before writing the entry. Append the new entry row.
 
 ## Unknown operation
 
