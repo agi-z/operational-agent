@@ -8,6 +8,6 @@
 | `agent-guide-advanced.md` | Advanced guide — multi-agent workspaces. Read after the basic guide. |
 | `.claude/commands/agent.md` | The single dispatcher command. |
 | `.claude/agent-operations/` | Built-in operations shared by every agent in this workspace. Dispatched by `/agent` first; per-agent ops at `<agent>/operations/` extend the surface. |
+| `agent/` | The default agent (FictionalCo sales agent). |
+| `agent-output/` | Generative pickup zone for the default agent. |
 | `user/` | User-private zone, shared across agents. Agents do not read here unless explicitly pointed via `/agent ingest <path>`. |
-
-*No agents yet. Run `/agent create-agent` to bootstrap one.*
