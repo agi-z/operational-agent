@@ -70,6 +70,14 @@ question: <one-line judgment the user must resolve>
 
 Every op that writes a pending file MUST also append a row to `<agent>/pending/INDEX.md` (`path | <question>`). The session-start pending-check reads this INDEX.
 
+**Pending items are never deleted.** When a pending item is resolved (see § Dispatch procedure, step 3), it is *relocated* to `<agent>/pending/resolved/` — never erased — so the brain keeps a permanent record of every judgment call and how it was settled. On resolution the file gains three frontmatter fields:
+
+```yaml
+resolution: confirmed→<target> | amended→<target> | dropped
+resolved-at: <YYYY-MM-DD HH:MM>
+resolved-note: <optional — why dropped, or what was amended>
+```
+
 ## Dispatch procedure
 
 Once agent and operation are resolved:
@@ -81,7 +89,15 @@ Once agent and operation are resolved:
 
    > You have N pending item(s) awaiting verification. Resolve now, or continue to converse? [resolve | continue]
 
-   If the user opts to resolve, walk pending items one at a time; for each, present the parked content and ask the user to confirm / amend / drop. Confirmed items move to their target location in `<agent>/`; dropped items are deleted. Then proceed to the requested operation.
+   If the user opts to resolve, walk pending items one at a time; for each, present the parked content and ask the user to confirm / amend / drop:
+
+   - **Confirm** — write the parked content to the file's `target` inside `<agent>/` (apply the grounding rule to that write).
+   - **Amend** — apply the user's edits, then write to `target` as above.
+   - **Drop** — the content is not written into the brain.
+
+   **In all three cases the pending file is never deleted — it is relocated to `<agent>/pending/resolved/` as a permanent record.** Before moving, stamp `resolution` / `resolved-at` / `resolved-note` into its frontmatter (see § Pending file shape). Then: move the file to `<agent>/pending/resolved/<same-name>.md`; remove its row from `<agent>/pending/INDEX.md`; append a row to `<agent>/pending/resolved/INDEX.md` (`path | resolution | <question>`). Create `pending/resolved/INDEX.md` lazily with the standard two-column header if it does not yet exist.
+
+   Then proceed to the requested operation.
 
 4. **Resolve the operation.** Operations are resolved in this order:
    1. **Built-in** at `.claude/agent-operations/<op>.md` — shared workspace-level operations. Checked first.
@@ -95,6 +111,12 @@ Once agent and operation are resolved:
 9. **Log the invocation** per the operation's Logging section: write an entry at `<agent>/operations/logs/<op>/YYMMDD-N-<short>.md` with the standard frontmatter (timestamp, input summary, output references, pending items created, outcome).
    - **Picking `N`:** scan `<agent>/operations/logs/<op>/` for files with today's `YYMMDD` prefix; use `max(existing N) + 1`, or `1` if none. (Same rule applies to every `YYMMDD-N-...` path in the workspace — entity logs, pending items, `<agent>-output/` sub-folders.)
    - **Lazy INDEX.md.** If `<agent>/operations/logs/<op>/INDEX.md` does not exist (this is the first invocation logged for this op on this agent), create it with the standard two-column header before writing the entry. Append the new entry row.
+10. **Commit the invocation.** Every completed invocation is committed so the workspace is an atomic, recoverable checkpoint after each `/agent` run (this applies to `create-agent` too, even though it skipped steps 1–3):
+    - `git add -A` at the workspace root — captures the op's writes, the log entry, any pending relocations into `pending/resolved/`, and any incidental user edits.
+    - Commit with message `/agent[ <agent>/] <op>: <input-summary>`, reusing the one-line input summary from the op log so commit history mirrors the operation log. Omit the folder for the default agent; include it for a named agent (e.g. `/agent sales-agent/ ingest: Acme call transcript`).
+    - **Local commit only — never push.** Pushing stays a deliberate user action.
+    - **Skip on abort.** If the operation aborted before producing output (outcome neither `ok` nor `partial`, or the user cancelled), make no commit.
+    - **Skip silently** if the workspace is not a git repository, or if there is nothing staged to commit. The commit is a convenience, not a hard requirement — never block the operation's result on it.
 
 ## Unknown operation
 
